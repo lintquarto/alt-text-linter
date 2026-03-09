@@ -1,0 +1,23 @@
+name: Update semantic tags
+run-name: Update semantic tags
+
+on:
+  release:
+    types: [published, edited]
+
+jobs:
+  update-tags:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update version tags
+        uses: EndBug/update-version-tags@v1
+        with:
+          prefix: v
+          major: true
+          minor: true
+          tag: ${{ github.event.release.tag_name }}
