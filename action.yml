@@ -6,6 +6,13 @@ runs:
     - uses: actions/setup-python@v5
       with:
         python-version: "3.13"
+
+    - name: Checkout action repo
+      uses: actions/checkout@v4
+      with:
+        repository: lintquarto/alt-text-linter
+        path: .github/actions/alt-text-linter
+
     - name: Run alt text linter
       shell: bash
-      run: python lint_alt_text.py
+      run: python .github/actions/alt-text-linter/lint_alt_text.py
