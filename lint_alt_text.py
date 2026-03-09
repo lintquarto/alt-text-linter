@@ -1,52 +1,164 @@
+"""
+Check QMD files for images missing alt text .
+
+Intended for use in CI/CD pipelines, returning a non-zero exit code
+when issues are found.
+"""
+
+import argparse
 import re
 import sys
+
 from pathlib import Path
 
 
-def find_images_without_alt(file_path):
-    """Find images in qmd files missing alt text (both markdown and HTML)"""
-    with open(file_path, "r", encoding="utf-8") as f:
-        content = f.read()
+class AltTextLinter:
+    """
+    Scan QMD files for markdown images missing alt text.
 
-    issues = []
+    Searches for markdown image syntax `![](...)` that is not followed
+    by a Quarto attribute block containing `alt` or `fig-alt`. Code
+    blocks (fenced and inline) are stripped before scanning to avoid
+    false positives.
 
-    # Remove fenced code blocks ```...``` (including ```{.md} etc.)
-    code_fence_pattern = r"```[\s\S]*?```"
-    content_no_code = re.sub(code_fence_pattern, "", content)
+    Parameters
+    ----------
+    root : Path
+        Directory to recursively search for `.qmd` files. Defaults to the
+        current working directory.
 
-    # Remove inline code `...`
-    inline_code_pattern = r"`[^`]*`"
-    content_no_code = re.sub(inline_code_pattern, "", content_no_code)
+    Attributes
+    ----------
+    root : Path
+        Root directory for the file search.
+    """
 
-    md_pattern = r"(?<!\[)!\[(?:\s*)\]\([^)]+\)"
-    attr_pattern = r"\{[^}]*(?:\balt=|\bfig-alt=)[^}]*\}"
+    # Regex to match fenced code blocks (i.e., ``` ... ```)
+    _CODE_FENCE_RE = re.compile(r"```[\s\S]*?```")
 
-    for match in re.finditer(md_pattern, content_no_code):
-        end = match.end()
-        # Look at the next chunk of text after the image
-        following = content_no_code[end:end+200]  # enough to include `{...}`
-        if re.match(r"\s*" + attr_pattern, following):
-            # This image has alt/fig-alt in its attribute block; skip
-            continue
-        line_num = content[:match.start()].count("\n") + 1
-        issues.append(("markdown", line_num, match.group(0)))
+    # Regex to match inline code (i.e., ` ... `)
+    _INLINE_CODE_RE = re.compile(r"`[^`]*`")
 
-    return issues
+    # Regex to match markdown images
+    _IMAGE_RE = re.compile(r"(?<!\[)!\[(?:\s*)\]\([^)]+\)")
+
+    # Regex to match a Quarto attribute block containing alt or fig-alt
+    _ALT_RE = re.compile(r"\s*\{[^}]*(?:\balt=|\bfig-alt=)[^}]*\}")
+
+    def __init__(self, root: Path = Path(".")) -> None:
+        self.root = root
+
+    def _strip_code(self, text: str) -> str:
+        """
+        Remove fenced and inline code blocks from text.
+
+        Prevents code examples containing image syntax from being
+        flagged as missing alt text.
+
+        Parameters
+        ----------
+        text : str
+            Raw file content.
+
+        Returns
+        -------
+        str
+            Content with all code blocks replaced by empty strings.
+        """
+        result = self._CODE_FENCE_RE.sub("", text)
+        return self._INLINE_CODE_RE.sub("", result)
+
+    def check_file(self, path: Path) -> list[tuple[int, str]]:
+        """
+        Find markdown images missing alt or fig-alt in a single file.
+
+        Parameters
+        ----------
+        path : Path
+            Path to a `.qmd` file.
+
+        Returns
+        -------
+        list[tuple[int, str]]
+            Pairs of (line_number, image_snippet) for each image that is not
+            followed by an attribute block containing `alt` or `fig-alt`.
+        """
+        text = path.read_text(encoding="utf-8")
+        stripped = self._strip_code(text)
+
+        issues: list[tuple[int, str]] = []
+
+        for match in self._IMAGE_RE.finditer(stripped):
+            # Check the text after the image for a {fig-alt=...} block
+            following = stripped[match.end():match.end() + 200]
+            if self._ALT_RE.match(following):
+                continue
+
+            line = text.count("\n", 0, match.start()) + 1
+            issues.append((line, match.group(0)))
+
+        return issues
+
+    def run(self) -> int:
+        """
+        Lint all QMD files under root and print results.
+
+        Returns
+        -------
+        int
+            Exit code: 0 if all images have alt text, 1 otherwise.
+        """
+        found_any = False
+
+        for path in self.root.rglob("*.qmd"):
+            issues = self.check_file(path)
+            if not issues:
+                continue
+
+            found_any = True
+            print(f"\n{path}:")
+            for line, snippet in issues:
+                print(f"  Line {line} [markdown]: {snippet}")
+
+        if not found_any:
+            print("\u2713 All images have alt text!")
+
+        return 1 if found_any else 0
 
 
-# Check all qmd files
-qmd_files = Path(".").rglob("*.qmd")
-found_issues = False
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    """
+    Parse command-line arguments.
 
-for file in qmd_files:
-    issues = find_images_without_alt(file)
-    if issues:
-        found_issues = True
-        print(f"\n{file}:")
-        for img_type, line_num, img in issues:
-            print(f"  Line {line_num} [{img_type}]: {img}")
+    Parameters
+    ----------
+    argv : list of str, optional
+        Arguments to parse (defaults to `sys.argv[1:]`).
 
-if not found_issues:
-    print("✓ All images have alt text!")
-else:
-    sys.exit(1)  # Non-zero exit for CI/CD
+    Returns
+    -------
+    argparse.Namespace
+        Parsed arguments.
+    """
+    parser = argparse.ArgumentParser(
+        description="Check QMD files for images missing alt text (fig-alt)."
+    )
+    parser.add_argument(
+        "path",
+        nargs="?",
+        default=".",
+        help="Root directory to search (default: current directory).",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Entry point for command-line execution."""
+    args = parse_args(argv)
+    root = Path(args.path)
+    linter = AltTextLinter(root=root)
+    return linter.run()
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))
