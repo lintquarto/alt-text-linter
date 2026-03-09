@@ -4,11 +4,19 @@ This repository stores a GitHub action for linting alt-text in Quarto markdown (
 
 ## Usage
 
+This is currently in early development with no major tags yet, so for now you should pin to `main`:
+
+```
+uses: lintquarto/alt-text-linter@main
+```
+
+<!--
 We recommend pinning to a major tag if you want non-breaking updates:
 
 ```
 uses: lintquarto/alt-text-linter@v1
 ```
+-->
 
 ## Example
 
