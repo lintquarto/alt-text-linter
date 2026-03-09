@@ -1,0 +1,11 @@
+name: Quarto alt text linter
+description: Lint Quarto .qmd files for missing image alt text
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.13"
+    - name: Run alt text linter
+      shell: bash
+      run: python lint_alt_text.py
