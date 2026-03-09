@@ -11,6 +11,7 @@ runs:
       uses: actions/checkout@v4
       with:
         repository: lintquarto/alt-text-linter
+        ref: main
         path: .github/actions/alt-text-linter
 
     - name: Run alt text linter
