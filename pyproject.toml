@@ -1,7 +1,7 @@
 [project]
 name = "alt-text-linter"
 version = "0.1.0"
-description = "Add your description here"
+description = "GitHub action for linting alternative (alt) text in Quarto markdown (.qmd) files."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
