@@ -3,6 +3,8 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
+[![Lint with ruff](https://github.com/lintquarto/alt-text-linter/actions/workflows/lint.yml/badge.svg)](https://github.com/lintquarto/alt-text-linter/actions/workflows/lint.yml)
+
 This repository stores a **GitHub action for linting alternative (alt) text in Quarto markdown (`.qmd`) files**.
 
 Alt text provides meaningful descriptions for images so that screen readers, text-based browsers, and users with low vision or limited bandwidth can understand their content. Including clear alt text improves accessibility, meets WCAG standards, and ensures research outputs are inclusive and comprehensible to all audiences.
