@@ -1,5 +1,12 @@
 name: Quarto alt text linter
 description: Lint Quarto .qmd files for missing image alt text
+
+inputs:
+  path:
+    description: Path in the caller repo to lint
+    required: false
+    default: ${{ github.workspace }}
+
 runs:
   using: composite
   steps:
@@ -7,13 +14,7 @@ runs:
       with:
         python-version: "3.13"
 
-    - name: Checkout action repo
-      uses: actions/checkout@v4
-      with:
-        repository: lintquarto/alt-text-linter
-        ref: main
-        path: .github/actions/alt-text-linter
-
     - name: Run alt text linter
       shell: bash
-      run: python .github/actions/alt-text-linter/alt_text_linter.py
+      run: |
+        python "${{ github.action_path }}/alt_text_linter.py" "${{ inputs.path }}"
