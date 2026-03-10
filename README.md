@@ -14,9 +14,16 @@ Alt text provides meaningful descriptions for images so that screen readers, tex
 This is currently in early development with no major tags yet, so for now you should pin to `main`:
 
 ```
-uses: lintquarto/alt-text-linter@main
+- uses: lintquarto/alt-text-linter@main
 ```
 
+You can specify a particular path to lint, for example:
+
+```
+- uses: lintquarto/alt-text-linter@main
+  with:
+    path: docs/
+```
 <!--
 We recommend pinning to a major tag if you want non-breaking updates:
 
