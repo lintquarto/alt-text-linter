@@ -1,0 +1,18 @@
+[project]
+name = "alt-text-linter"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "ruff>=0.15.5",
+]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+  "T201",   # allow print in this project
+  "D212",  # use D213: summary on second line
+  "D203",  # use D211: no blank line before class docstring
+  "COM812",  # let the formatter handle trailing commas
+]
