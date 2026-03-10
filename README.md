@@ -3,6 +3,8 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
+[![Lint](https://github.com/lintquarto/alt-text-linter/actions/workflows/lint.yml/badge.svg)](https://github.com/lintquarto/alt-text-linter/actions/workflows/lint.yml)
+
 This repository stores a **GitHub action for linting alternative (alt) text in Quarto markdown (`.qmd`) files**.
 
 Alt text provides meaningful descriptions for images so that screen readers, text-based browsers, and users with low vision or limited bandwidth can understand their content. Including clear alt text improves accessibility, meets WCAG standards, and ensures research outputs are inclusive and comprehensible to all audiences.
@@ -12,9 +14,16 @@ Alt text provides meaningful descriptions for images so that screen readers, tex
 This is currently in early development with no major tags yet, so for now you should pin to `main`:
 
 ```
-uses: lintquarto/alt-text-linter@main
+- uses: lintquarto/alt-text-linter@main
 ```
 
+You can specify a particular path to lint, for example:
+
+```
+- uses: lintquarto/alt-text-linter@main
+  with:
+    path: docs/
+```
 <!--
 We recommend pinning to a major tag if you want non-breaking updates:
 
@@ -45,14 +54,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: lintquarto/alt-text-linter@main
 ```
-
-## Release management
-
-We follow the [GitHub guidelines](https://docs.github.com/en/actions/how-tos/create-and-publish-actions/release-and-maintain-actions) for releasing and maintaining actions.
-
-* Do feature work in branches off `main`.
-* Have a CI workflow that runs on `push` and `pull_request` that runs tests and lints.
-* Use semantic tags for releases, and keep moving major tag to point to the latest compatible release, so workflow users can safely do `uses: lintquarto/alt-text-linter@v1`. This is updated via `.github/workflows/release.yml` upon creating a new GitHub release.
 
 ## Contributors ✨
 

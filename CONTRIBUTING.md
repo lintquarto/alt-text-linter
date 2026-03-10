@@ -2,7 +2,9 @@
 
 Thank you for your interest in contributing!
 
-## Setting up dev environment with uv
+<br>
+
+## Setting up development environment with uv
 
 We use uv for dependency management. You should follow instructions from the uv documentation for installing it onto your operating system.
 
@@ -11,6 +13,8 @@ To install the recorded environment (including python version from `.python-vers
 ```
 uv sync
 ```
+
+<br>
 
 ## Linting
 
@@ -31,6 +35,26 @@ Once project is passing `ruff check`, run Ruff formatter:
 ```
 uv run ruff format
 ```
+
+<br>
+
+## Release management
+
+We follow the [GitHub guidelines](https://docs.github.com/en/actions/how-tos/create-and-publish-actions/release-and-maintain-actions) for releasing and maintaining actions.
+
+* Do feature work in branches off `main`.
+* Have a CI workflow that runs on `push` and `pull_request` that runs tests and lints.
+* Use semantic tags for releases, and keep moving major tag to point to the latest compatible release, so workflow users can safely do `uses: lintquarto/alt-text-linter@v1`. This is updated via `.github/workflows/release.yml` upon creating a new GitHub release.
+
+### Instructions for creating a new release
+
+1. Update `CHANGELOG.md`.
+
+2. Create GitHub release.
+
+3. Confirm that GitHub action `release.yml` has successfully run and updated tags.
+
+<br>
 
 ## `all-contributors`
 
