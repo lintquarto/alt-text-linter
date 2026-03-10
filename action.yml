@@ -16,4 +16,4 @@ runs:
 
     - name: Run alt text linter
       shell: bash
-      run: python .github/actions/alt-text-linter/lint_alt_text.py
+      run: python .github/actions/alt-text-linter/alt_text_linter.py
