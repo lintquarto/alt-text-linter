@@ -32,6 +32,14 @@ Once project is passing `ruff check`, run Ruff formatter:
 uv run ruff format
 ```
 
+## Release management
+
+We follow the [GitHub guidelines](https://docs.github.com/en/actions/how-tos/create-and-publish-actions/release-and-maintain-actions) for releasing and maintaining actions.
+
+* Do feature work in branches off `main`.
+* Have a CI workflow that runs on `push` and `pull_request` that runs tests and lints.
+* Use semantic tags for releases, and keep moving major tag to point to the latest compatible release, so workflow users can safely do `uses: lintquarto/alt-text-linter@v1`. This is updated via `.github/workflows/release.yml` upon creating a new GitHub release.
+
 ## `all-contributors`
 
 If your name or contributions are missing from the README, or if you contributed in ways not captured by the current role emojis, please create an issue and use: 
