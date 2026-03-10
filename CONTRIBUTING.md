@@ -2,7 +2,7 @@
 
 Thank you for your interest in contributing!
 
-## All-contributors
+## `all-contributors`
 
 If your name or contributions are missing from the README, or if you contributed in ways not captured by the current role emojis, please create an issue and use: 
 
