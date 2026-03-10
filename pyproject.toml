@@ -1,0 +1,12 @@
+[project]
+name = "alt-text-linter"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "ruff>=0.15.5",
+]
+
+[tool.ruff.lint]
+select = ["ALL"]
