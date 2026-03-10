@@ -10,3 +10,8 @@ dependencies = [
 
 [tool.ruff.lint]
 select = ["ALL"]
+ignore = [
+  "T201",   # allow print in this project
+  "D212",  # use D213: summary on second line
+  "D203",  # use D211: no blank line before class docstring
+]

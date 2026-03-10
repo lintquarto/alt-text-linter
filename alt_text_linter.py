@@ -8,7 +8,6 @@ when issues are found.
 import argparse
 import re
 import sys
-
 from pathlib import Path
 
 
@@ -21,16 +20,11 @@ class AltTextLinter:
     blocks (fenced and inline) are stripped before scanning to avoid
     false positives.
 
-    Parameters
-    ----------
-    root : Path
-        Directory to recursively search for `.qmd` files. Defaults to the
-        current working directory.
-
     Attributes
     ----------
     root : Path
         Root directory for the file search.
+
     """
 
     # Regex to match fenced code blocks (i.e., ``` ... ```)
@@ -45,7 +39,17 @@ class AltTextLinter:
     # Regex to match a Quarto attribute block containing alt or fig-alt
     _ALT_RE = re.compile(r"\s*\{[^}]*(?:\balt=|\bfig-alt=)[^}]*\}")
 
-    def __init__(self, root: Path = Path(".")) -> None:
+    def __init__(self, root: Path = Path()) -> None:
+        """
+        Initialise the linter.
+
+        Parameters
+        ----------
+        root : Path
+            Directory to recursively search for `.qmd` files. Defaults to the
+            current working directory.
+
+        """
         self.root = root
 
     def _strip_code(self, text: str) -> str:
@@ -64,6 +68,7 @@ class AltTextLinter:
         -------
         str
             Content with all code blocks replaced by empty strings.
+
         """
         result = self._CODE_FENCE_RE.sub("", text)
         return self._INLINE_CODE_RE.sub("", result)
@@ -82,6 +87,7 @@ class AltTextLinter:
         list[tuple[int, str]]
             Pairs of (line_number, image_snippet) for each image that is not
             followed by an attribute block containing `alt` or `fig-alt`.
+
         """
         text = path.read_text(encoding="utf-8")
         stripped = self._strip_code(text)
@@ -90,7 +96,7 @@ class AltTextLinter:
 
         for match in self._IMAGE_RE.finditer(stripped):
             # Check the text after the image for a {fig-alt=...} block
-            following = stripped[match.end():match.end() + 200]
+            following = stripped[match.end() : match.end() + 200]
             if self._ALT_RE.match(following):
                 continue
 
@@ -107,6 +113,7 @@ class AltTextLinter:
         -------
         int
             Exit code: 0 if all images have alt text, 1 otherwise.
+
         """
         found_any = False
 
@@ -139,9 +146,10 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     -------
     argparse.Namespace
         Parsed arguments.
+
     """
     parser = argparse.ArgumentParser(
-        description="Check QMD files for images missing alt text (fig-alt)."
+        description="Check QMD files for images missing alt text (fig-alt).",
     )
     parser.add_argument(
         "path",
