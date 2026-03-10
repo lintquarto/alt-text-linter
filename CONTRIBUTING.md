@@ -14,8 +14,22 @@ uv sync
 
 ## Linting
 
+We use Ruff for linting, with configuration in `pyproject.toml`. To run the Ruff linter:
+
 ```
-uv run bash lint.sh
+uv run ruff check
+```
+
+Resolve "fixable" errors automatically:
+
+```
+uv run ruff check --fix
+```
+
+Once project is passing `ruff check`, run Ruff formatter:
+
+```
+uv run ruff format
 ```
 
 ## `all-contributors`
