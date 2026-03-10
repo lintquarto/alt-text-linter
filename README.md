@@ -3,7 +3,7 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-[![Lint with ruff](https://github.com/lintquarto/alt-text-linter/actions/workflows/lint.yml/badge.svg)](https://github.com/lintquarto/alt-text-linter/actions/workflows/lint.yml)
+[![Lint](https://github.com/lintquarto/alt-text-linter/actions/workflows/lint.yml/badge.svg)](https://github.com/lintquarto/alt-text-linter/actions/workflows/lint.yml)
 
 This repository stores a **GitHub action for linting alternative (alt) text in Quarto markdown (`.qmd`) files**.
 
