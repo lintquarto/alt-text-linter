@@ -7,7 +7,7 @@
 
 This repository stores a **GitHub action for linting alternative (alt) text in Quarto markdown (`.qmd`) files**.
 
-Alt text provides meaningful descriptions for images so that screen readers, text-based browsers, and users with low vision or limited bandwidth can understand their content. Including clear alt text improves accessibility, meets WCAG standards, and ensures research outputs are inclusive and comprehensible to all audiences.
+Alt text provides meaningful descriptions for images so that screen readers, text-based browsers, and users with low vision or limited bandwidth can understand their content. Including clear alt text improves accessibility, meets WCAG standards, and ensures outputs are inclusive and comprehensible to all audiences.
 
 ## Usage
 
@@ -53,6 +53,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: lintquarto/alt-text-linter@main
+```
+
+## How do you provide alt text in Quarto?
+
+```
+![](image.png){fig-alt="This image has alt-text"}
+```
+
+```
+![](image.png){alt="This image also has alt-text"}
+```
+
+```
+![Due to the backslash, this image renders the caption as alt text](image.png)\
+```
+
+```
+<img src="image.png" alt="This image defined using HTML has alt-text">
 ```
 
 ## Contributors ✨
