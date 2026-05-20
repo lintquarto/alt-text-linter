@@ -17,7 +17,7 @@ class AltTextLinter:
 
     Searches for markdown image syntax `![](...)` that is not followed
     by a Quarto attribute block containing `alt` or `fig-alt`. Code
-    blocks (fenced and inline) are stripped before scanning to avoid
+    blocks (fenced and inline) are masked before scanning to avoid
     false positives.
 
     Attributes
@@ -52,9 +52,27 @@ class AltTextLinter:
         """
         self.root = root
 
+    @staticmethod
+    def _mask_code(match: re.Match[str]) -> str:
+        """
+        Replace a code match with same-length whitespace.
+
+        Parameters
+        ----------
+        match : re.Match[str]
+            Code span matched in the original text.
+
+        Returns
+        -------
+        str
+            Whitespace preserving the original match length and newlines.
+
+        """
+        return "".join("\n" if char == "\n" else " " for char in match.group(0))
+
     def _strip_code(self, text: str) -> str:
         """
-        Remove fenced and inline code blocks from text.
+        Mask fenced and inline code blocks in text.
 
         Prevents code examples containing image syntax from being
         flagged as missing alt text.
@@ -67,11 +85,11 @@ class AltTextLinter:
         Returns
         -------
         str
-            Content with all code blocks replaced by empty strings.
+            Content with all code blocks replaced by same-length whitespace.
 
         """
-        result = self._CODE_FENCE_RE.sub("", text)
-        return self._INLINE_CODE_RE.sub("", result)
+        result = self._CODE_FENCE_RE.sub(self._mask_code, text)
+        return self._INLINE_CODE_RE.sub(self._mask_code, result)
 
     def check_file(self, path: Path) -> list[tuple[int, str]]:
         """
