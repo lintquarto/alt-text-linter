@@ -34,7 +34,9 @@ class AltTextLinter:
     _INLINE_CODE_RE = re.compile(r"`[^`]*`")
 
     # Regex to match markdown images
-    _IMAGE_RE = re.compile(r"(?<!\[)!\[(?:\s*)\]\([^)]+\)")
+    _IMAGE_RE = re.compile(
+        r"(?<!\[)!\[(?P<label>[^\]\n]*)\]\([^)]+\)(?P<as_alt>\\)?",
+    )
 
     # Regex to match a Quarto attribute block containing alt or fig-alt
     _ALT_RE = re.compile(r"\s*\{[^}]*(?:\balt=|\bfig-alt=)[^}]*\}")
@@ -95,6 +97,10 @@ class AltTextLinter:
         issues: list[tuple[int, str]] = []
 
         for match in self._IMAGE_RE.finditer(stripped):
+            # Quarto treats caption text as alt text when a backslash follows.
+            if match.group("label").strip() and match.group("as_alt"):
+                continue
+
             # Check the text after the image for a {fig-alt=...} block
             following = stripped[match.end() : match.end() + 200]
             if self._ALT_RE.match(following):
