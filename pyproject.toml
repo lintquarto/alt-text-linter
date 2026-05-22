@@ -8,11 +8,24 @@ dependencies = [
     "ruff>=0.15.5",
 ]
 
-[tool.ruff.lint]
-select = ["ALL"]
-ignore = [
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length=79
+format.quote-style="double"
+lint.select = ["ALL"]
+lint.ignore = [
   "T201",   # allow print in this project
   "D212",  # use D213: summary on second line
   "D203",  # use D211: no blank line before class docstring
   "COM812",  # let the formatter handle trailing commas
+]
+lint.pydocstyle.convention = "numpy"
+lint.per-file-ignores."tests/*" = [
+    "INP001",  # File {filename} is part of an implicit namespace package. Add an __init__.py.
+    "S101",  # Use of `assert` detected
+    "ANN",  # Missing type annotations
+    "PLR2004",  # Magic value used in comparison
 ]
