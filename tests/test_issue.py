@@ -1,7 +1,8 @@
-import pytest
-from pathlib import Path
-from alt_text_linter import AltTextLinter
+"""Tests for things that can go wrong."""
 
+import pytest
+
+from alt_text_linter import AltTextLinter
 
 MISSING_BACKTICK = """\
 
@@ -26,8 +27,10 @@ def test_missing_backtick(tmp_path):
 
     # Raise a failure if the image (neither have alt-text) are not flagged
     failures = []
-    for image in ["image1", "image2"]:
-        if f"![]({image}.png)" not in images:
-            failures.append(f"{image}.png")
+    failures = [
+        f"{image}.png"
+        for image in ["image1", "image2"]
+        if f"![]({image}.png)" not in images
+    ]
     if failures:
         pytest.fail(f"Images not flagged: {failures}.")
