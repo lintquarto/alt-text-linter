@@ -30,8 +30,8 @@ class AltTextLinter:
     # Regex to match fenced code blocks (i.e., ``` ... ```)
     _CODE_FENCE_RE = re.compile(r"```[\s\S]*?```")
 
-    # Regex to match inline code (i.e., ` ... `)
-    _INLINE_CODE_RE = re.compile(r"`[^`]*`")
+    # Regex to match inline code (i.e., ` ... `) without crossing lines.
+    _INLINE_CODE_RE = re.compile(r"`[^`\n]*`")
 
     # Regex to match markdown images
     _IMAGE_RE = re.compile(r"(?<!\[)!\[(?:\s*)\]\([^)]+\)")

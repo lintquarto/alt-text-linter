@@ -17,4 +17,4 @@ runs:
     - name: Run alt text linter
       shell: bash
       run: |
-        python "${{ github.action_path }}/alt_text_linter.py" "${{ inputs.path }}"
+        python "${{ github.action_path }}/src/alt_text_linter.py" "${{ inputs.path }}"
