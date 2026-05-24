@@ -68,7 +68,9 @@ class AltTextLinter:
             Whitespace preserving the original match length and newlines.
 
         """
-        return "".join("\n" if char == "\n" else " " for char in match.group(0))
+        return "".join(
+            "\n" if char == "\n" else " " for char in match.group(0)
+        )
 
     def _strip_code(self, text: str) -> str:
         """

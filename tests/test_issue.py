@@ -38,21 +38,18 @@ def test_missing_backtick(tmp_path):
 
 def test_code_masking_keeps_reported_line_numbers(tmp_path):
     """Regression test for issue #13: report original line numbers."""
-    text = "\n".join(
-        [
-            "Intro",
-            "",
-            "```yaml",
-            "project:",
-            "  type: website",
-            "```",
-            "",
-            "Text with `![](ignored.png)` inline code.",
-            "",
-            "![](missing.png)",
-            "",
-        ],
-    )
+    text = """\
+Intro
+
+```yaml
+project:
+  type: website
+```
+
+Text with `![](ignored.png)` inline code.
+
+![](missing.png)
+"""
     expected_line = text.splitlines().index("![](missing.png)") + 1
 
     qmd = tmp_path / "example.qmd"
