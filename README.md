@@ -1,6 +1,6 @@
 # Alt text linter
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![Lint](https://github.com/lintquarto/alt-text-linter/actions/workflows/lint.yml/badge.svg)](https://github.com/lintquarto/alt-text-linter/actions/workflows/lint.yml)
@@ -42,9 +42,11 @@ on:
   push:
     paths:
       - '**.qmd'
+      - '.github/workflows/lint_alt_text.yml'
   pull_request:
     paths:
       - '**.qmd'
+      - '.github/workflows/lint_alt_text.yml'
   workflow_dispatch:
 
 jobs:
@@ -84,6 +86,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://www.linkedin.com/in/amyheather"><img src="https://avatars.githubusercontent.com/u/92166537?v=4?s=100" width="100px;" alt="Amy Heather"/><br /><sub><b>Amy Heather</b></sub></a><br /><a href="https://github.com/lintquarto/alt-text-linter/commits?author=amyheather" title="Code">💻</a> <a href="https://github.com/lintquarto/alt-text-linter/commits?author=amyheather" title="Documentation">📖</a> <a href="#maintenance-amyheather" title="Maintenance">🚧</a> <a href="https://github.com/lintquarto/alt-text-linter/commits?author=amyheather" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Mirochill"><img src="https://avatars.githubusercontent.com/u/200482516?v=4?s=100" width="100px;" alt="Miro"/><br /><sub><b>Miro</b></sub></a><br /><a href="https://github.com/lintquarto/alt-text-linter/commits?author=Mirochill" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
