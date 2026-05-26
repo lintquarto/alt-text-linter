@@ -34,3 +34,27 @@ def test_missing_backtick(tmp_path):
     ]
     if failures:
         pytest.fail(f"Images not flagged: {failures}.")
+
+
+def test_code_masking_keeps_reported_line_numbers(tmp_path):
+    """Regression test for issue #13: report original line numbers."""
+    text = """\
+Intro
+
+```yaml
+project:
+  type: website
+```
+
+Text with `![](ignored.png)` inline code.
+
+![](missing.png)
+"""
+    expected_line = text.splitlines().index("![](missing.png)") + 1
+
+    qmd = tmp_path / "example.qmd"
+    qmd.write_text(text, encoding="utf-8")
+
+    issues = AltTextLinter().check_file(qmd)
+
+    assert issues == [(expected_line, "![](missing.png)")]
