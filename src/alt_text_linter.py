@@ -8,17 +8,65 @@ when issues are found.
 import argparse
 import re
 import sys
+from html.parser import HTMLParser
 from pathlib import Path
+
+
+class _HTMLImageParser(HTMLParser):
+    """
+    Collect HTML image tags that do not define alt text.
+
+    HTMLParser gives us line numbers and normalized attributes without adding a
+    heavier dependency for this small action.
+
+    """
+
+    def __init__(self) -> None:
+        """Initialise the parser."""
+        super().__init__()
+        self.issues: list[tuple[int, str]] = []
+
+    def handle_starttag(
+        self,
+        tag: str,
+        attrs: list[tuple[str, str | None]],
+    ) -> None:
+        """Check non-empty HTML start tags."""
+        self._check_image(tag, attrs)
+
+    def handle_startendtag(
+        self,
+        tag: str,
+        attrs: list[tuple[str, str | None]],
+    ) -> None:
+        """Check self-closing HTML start tags."""
+        self._check_image(tag, attrs)
+
+    def _check_image(
+        self,
+        tag: str,
+        attrs: list[tuple[str, str | None]],
+    ) -> None:
+        """Record an issue for img tags without an alt attribute."""
+        if tag.lower() != "img":
+            return
+
+        if any(name.lower() == "alt" for name, _value in attrs):
+            return
+
+        line, _offset = self.getpos()
+        self.issues.append((line, self.get_starttag_text() or "<img>"))
 
 
 class AltTextLinter:
     """
-    Scan QMD files for markdown images missing alt text.
+    Scan QMD files for images missing alt text.
 
     Searches for markdown image syntax `![](...)` that is not followed
-    by a Quarto attribute block containing `alt` or `fig-alt`. Code
-    blocks (fenced and inline) are masked before scanning to avoid
-    false positives.
+    by a Quarto attribute block containing `alt` or `fig-alt`, and HTML
+    `<img>` tags without an `alt` attribute. Code blocks (fenced and inline)
+    are masked before scanning to avoid false positives while preserving
+    original line offsets.
 
     Attributes
     ----------
@@ -34,7 +82,9 @@ class AltTextLinter:
     _INLINE_CODE_RE = re.compile(r"`[^`\n]*`")
 
     # Regex to match markdown images
-    _IMAGE_RE = re.compile(r"(?<!\[)!\[(?:\s*)\]\([^)]+\)")
+    _IMAGE_RE = re.compile(
+        r"(?<!\[)!\[(?P<label>[^\]\n]*)\]\([^)]+\)(?P<as_alt>\\)?",
+    )
 
     # Regex to match a Quarto attribute block containing alt or fig-alt
     _ALT_RE = re.compile(r"\s*\{[^}]*(?:\balt=|\bfig-alt=)[^}]*\}")
@@ -115,6 +165,10 @@ class AltTextLinter:
         issues: list[tuple[int, str]] = []
 
         for match in self._IMAGE_RE.finditer(stripped):
+            # Quarto treats caption text as alt text when a backslash follows.
+            if match.group("label").strip() and match.group("as_alt"):
+                continue
+
             # Check the text after the image for a {fig-alt=...} block
             following = stripped[match.end() : match.end() + 200]
             if self._ALT_RE.match(following):
@@ -123,7 +177,11 @@ class AltTextLinter:
             line = text.count("\n", 0, match.start()) + 1
             issues.append((line, match.group(0)))
 
-        return issues
+        html_parser = _HTMLImageParser()
+        html_parser.feed(stripped)
+        issues.extend(html_parser.issues)
+
+        return sorted(issues, key=lambda issue: issue[0])
 
     def run(self) -> int:
         """
@@ -145,7 +203,12 @@ class AltTextLinter:
             found_any = True
             print(f"\n{path}:")
             for line, snippet in issues:
-                print(f"  Line {line} [markdown]: {snippet}")
+                kind = (
+                    "html"
+                    if snippet.lstrip().lower().startswith("<img")
+                    else "markdown"
+                )
+                print(f"  Line {line} [{kind}]: {snippet}")
 
         if not found_any:
             print("\u2713 All images have alt text!")
