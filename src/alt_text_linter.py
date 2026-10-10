@@ -25,6 +25,7 @@ class _HTMLImageParser(HTMLParser):
         """Initialise the parser."""
         super().__init__()
         self.issues: list[tuple[int, str]] = []
+        self.image_count = 0
 
     def handle_starttag(
         self,
@@ -51,6 +52,7 @@ class _HTMLImageParser(HTMLParser):
         if tag.lower() != "img":
             return
 
+        self.image_count += 1
         if any(name.lower() == "alt" for name, _value in attrs):
             return
 
@@ -138,12 +140,19 @@ class AltTextLinter:
             followed by an attribute block containing `alt` or `fig-alt`.
 
         """
+        issues, _image_count = self._scan_file(path)
+        return issues
+
+    def _scan_file(self, path: Path) -> tuple[list[tuple[int, str]], int]:
+        """Find missing alt text and count images outside code examples."""
         text = path.read_text(encoding="utf-8")
         stripped = self._strip_code(text)
 
         issues: list[tuple[int, str]] = []
+        image_count = 0
 
         for match in self._IMAGE_RE.finditer(stripped):
+            image_count += 1
             # Quarto treats caption text as alt text when a backslash follows.
             if match.group("label").strip() and match.group("as_alt"):
                 continue
@@ -160,7 +169,10 @@ class AltTextLinter:
         html_parser.feed(stripped)
         issues.extend(html_parser.issues)
 
-        return sorted(issues, key=lambda issue: issue[0])
+        return (
+            sorted(issues, key=lambda issue: issue[0]),
+            image_count + html_parser.image_count,
+        )
 
     def run(self) -> int:
         """
@@ -169,13 +181,22 @@ class AltTextLinter:
         Returns
         -------
         int
-            Exit code: 0 if all images have alt text, 1 otherwise.
+            Exit code: 1 if the root is not a directory or images are missing
+            alt text, 0 otherwise.
 
         """
+        if not self.root.is_dir():
+            print(f"Not a directory: {self.root}", file=sys.stderr)
+            return 1
+
         found_any = False
+        file_count = 0
+        image_count = 0
 
         for path in self.root.rglob("*.qmd"):
-            issues = self.check_file(path)
+            file_count += 1
+            issues, count = self._scan_file(path)
+            image_count += count
             if not issues:
                 continue
 
@@ -189,7 +210,11 @@ class AltTextLinter:
                 )
                 print(f"  Line {line} [{kind}]: {snippet}")
 
-        if not found_any:
+        if not file_count:
+            print(f"No .qmd files found under {self.root}.")
+        elif not image_count:
+            print("No images found in .qmd files.")
+        elif not found_any:
             print("\u2713 All images have alt text!")
 
         return 1 if found_any else 0

@@ -24,6 +24,10 @@ You can specify a particular path to lint, for example:
   with:
     path: docs/
 ```
+
+The path must be an existing directory. If no `.qmd` files or images are
+found, the action reports this explicitly and succeeds without claiming that
+images were checked. Images missing alt text cause the action to fail.
 <!--
 We recommend pinning to a major tag if you want non-breaking updates:
 
