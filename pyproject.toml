@@ -21,6 +21,7 @@ lint.ignore = [
   "D212",  # use D213: summary on second line
   "D203",  # use D211: no blank line before class docstring
   "COM812",  # let the formatter handle trailing commas
+  "CPY001",  # Missing copyright notice at top of file
 ]
 lint.pydocstyle.convention = "numpy"
 lint.per-file-ignores."tests/*" = [
@@ -28,4 +29,9 @@ lint.per-file-ignores."tests/*" = [
     "S101",  # Use of `assert` detected
     "ANN",  # Missing type annotations
     "PLR2004",  # Magic value used in comparison
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
 ]
