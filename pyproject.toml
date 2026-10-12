@@ -29,3 +29,8 @@ lint.per-file-ignores."tests/*" = [
     "ANN",  # Missing type annotations
     "PLR2004",  # Magic value used in comparison
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
